@@ -7,6 +7,7 @@ from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
 from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
 import subprocess
 import os
+import re
 
 def which(program):
     def is_exe(fpath):
@@ -61,7 +62,7 @@ class KeywordQueryEventListener(EventListener):
                     items.append(ExtensionResultItem(icon='images/icon.png',
                                                      name=result_text,
                                                      description="Click to copy",
-                                                     on_enter=CopyToClipboardAction(result_text)))
+                                                     on_enter=CopyToClipboardAction(re.sub('[^\d]', '', result_text))))
         else:
             items.append(ExtensionResultItem(icon='images/icon.png',
                                              name='Missing library',
