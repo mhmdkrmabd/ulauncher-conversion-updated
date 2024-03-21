@@ -4,6 +4,7 @@ from ulauncher.api.shared.event import KeywordQueryEvent, ItemEnterEvent
 from ulauncher.api.shared.item.ExtensionResultItem import ExtensionResultItem
 from ulauncher.api.shared.action.RenderResultListAction import RenderResultListAction
 from ulauncher.api.shared.action.HideWindowAction import HideWindowAction
+from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAction
 import subprocess
 import os
 
@@ -43,6 +44,7 @@ class KeywordQueryEventListener(EventListener):
                 UNITS_EXISTS = True
             else:
                 UNITS_EXISTS = False
+                
         if UNITS_EXISTS:
             if " to " in query:
                 start, end = query.split(" to ")
@@ -53,18 +55,19 @@ class KeywordQueryEventListener(EventListener):
                     items.append(ExtensionResultItem(icon='images/icon.png',
                                                      name='Invalid units',
                                                      description=out.strip(),
-                                                     on_enter=HideWindowAction()))
+                                                     on_enter=CopyToClipboardAction(out.strip())))
                 else:
+                    result_text = '%s %s' % (out.splitlines()[0].split("* ")[-1], end)
                     items.append(ExtensionResultItem(icon='images/icon.png',
-                                                     name='%s %s' % (out.splitlines()[0].split("* ")[-1], end),
-                                                     #description=out.splitlines()[0].strip(),
-                                                     on_enter=HideWindowAction()))
-
+                                                     name=result_text,
+                                                     description="Click to copy",
+                                                     on_enter=CopyToClipboardAction(result_text)))
         else:
-                items.append(ExtensionResultItem(icon='images/icon.png',
-                                                 name='Missing library',
-                                                 description='Please install the "units" package.',
-                                                 on_enter=HideWindowAction()))
+            items.append(ExtensionResultItem(icon='images/icon.png',
+                                             name='Missing library',
+                                             description='Please install the "units" package.',
+                                             on_enter=HideWindowAction()))
+
         return RenderResultListAction(items)
 
 if __name__ == '__main__':
